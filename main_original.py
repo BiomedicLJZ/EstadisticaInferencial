@@ -1,16 +1,12 @@
 import marimo
 
 __generated_with = "0.23.14"
-app = marimo.App(
-    width="full",
-    app_title="Estadística Inferencial — Cuaderno Interactivo",
-)
+app = marimo.App(width="medium", app_title="Estadística Inferencial — Cuaderno Interactivo")
 
 
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
@@ -21,21 +17,21 @@ def _():
     from scipy import stats
 
     plt.rcParams.update({
-        "figure.figsize": (7.2, 4.0),
-        "figure.dpi": 120,
-        "figure.facecolor": "black",
-        "axes.facecolor": "black",
-        "axes.spines.top": False,
-        "axes.spines.right": False,
-        "axes.grid": True,
+        "_figure._figsize": (7.2, 4.0),
+        "_figure.dpi": 120,
+        "_figure.facecolor": "white",
+        "_axes.facecolor": "white",
+        "_axes.spines.top": False,
+        "_axes.spines.right": False,
+        "_axes.grid": True,
         "grid.alpha": 0.25,
         "grid.linewidth": 0.8,
         "font.size": 11,
-        "axes.titlesize": 12,
-        "axes.titleweight": "bold",
-        "axes.labelsize": 10.5,
-        "legend.frameon": False,
-        "legend.fontsize": 9.5,
+        "_axes.titlesize": 12,
+        "_axes.titleweight": "bold",
+        "_axes.labelsize": 10.5,
+        "_legend.frameon": False,
+        "_legend.fontsize": 9.5,
     })
 
     # Paleta consistente para todo el cuaderno
@@ -49,76 +45,81 @@ def _():
         "muted":   "#94a3b8",
     }
 
-    def new_ax(figsize=(7.2, 4.0), ncols=1):
-        _fig, _ax = plt.subplots(1, ncols, figsize=figsize)
+    def new_ax(_figsize=(7.2, 4.0)):
+        _fig, _ax = plt.subplots(_figsize=_figsize)
         return _fig, _ax
 
-    return C, new_ax, np, stats
+    return C, new_ax, np, plt, stats
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    # 📊 Estadística Inferencial — Laboratorio Interactivo
+    mo.md(
+        r"""
+        # 📊 Estadística Inferencial — Laboratorio Interactivo
 
-    > Un cuaderno reactivo para **entender inferencia estadística tocándola**: mueves un control,
-    > y las fórmulas, gráficas y decisiones se recalculan al instante.
+        > Un cuaderno reactivo para **entender inferencia estadística tocándola**: mueves un control,
+        > y las fórmulas, gráficas y decisiones se recalculan al instante.
 
-    **Cómo usarlo.** marimo es *reactivo*: no hay que "correr celdas" en orden. Cambia cualquier
-    *slider* o *dropdown* y todo lo que depende de él se actualiza solo. Las fórmulas en $\LaTeX$
-    muestran **los valores actuales del simulador**, no símbolos abstractos.
+        **Cómo usarlo.** marimo es *reactivo*: no hay que "correr celdas" en orden. Cambia cualquier
+        *slider* o *dropdown* y todo lo que depende de él se actualiza solo. Las fórmulas en $\LaTeX$
+        muestran **los valores actuales del simulador**, no símbolos abstractos.
 
-    **Ruta pedagógica** (cada tema motiva al siguiente):
+        **Ruta pedagógica** (cada tema motiva al siguiente):
 
-    1. **Inferencia estadística** — de la muestra a la población (Teorema del Límite Central).
-    2. **Distribuciones** — Bernoulli, Binomial, Poisson, Uniforme, Normal.
-    3. **Significancia, valor $p$ y tolerancia de riesgo** — $\alpha$, errores Tipo I/II, potencia.
-    4. **Pruebas estadísticas** — qué prueba para qué distribución.
-    5. **Regresión** — lineal y logística.
-    6. **Correlación y causalidad** — por qué no son lo mismo.
+        1. **Inferencia estadística** — de la muestra a la población (Teorema del Límite Central).
+        2. **Distribuciones** — Bernoulli, Binomial, Poisson, Uniforme, Normal.
+        3. **Significancia, valor $p$ y tolerancia de riesgo** — $\alpha$, errores Tipo I/II, potencia.
+        4. **Pruebas estadísticas** — qué prueba para qué distribución.
+        5. **Regresión** — lineal y logística.
+        6. **Correlación y causalidad** — por qué no son lo mismo.
 
-    A lo largo del camino: 🧠 *intuición*, ⚠️ *trampas comunes*, ❓ *preguntas socráticas* y
-    mini-*quizzes* de autoevaluación.
-    """)
+        A lo largo del camino: 🧠 *intuición*, ⚠️ *trampas comunes*, ❓ *preguntas socráticas* y
+        mini-*quizzes* de autoevaluación.
+        """
+    )
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# 1. ESTADÍSTICA INFERENCIAL
+# ============================================================================
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 1 · Estadística Inferencial
+    mo.md(
+        r"""
+        ## 1 · Estadística Inferencial
 
-    La **estadística descriptiva** resume lo que *ya tienes*. La **estadística inferencial**
-    da el salto arriesgado: usar una **muestra** para decir algo sobre una **población** que
-    nunca observaste por completo.
+        La **estadística descriptiva** resume lo que *ya tienes*. La **estadística inferencial**
+        da el salto arriesgado: usar una **muestra** para decir algo sobre una **población** que
+        nunca observaste por completo.
 
-    | Concepto | Población | Muestra |
-    |---|---|---|
-    | Qué es | todo el universo de interés | subconjunto que sí medimos |
-    | Media | $\mu$ (parámetro, fijo/desconocido) | $\bar{x}$ (estadístico, aleatorio) |
-    | Desv. | $\sigma$ | $s$ |
+        | Concepto | Población | Muestra |
+        |---|---|---|
+        | Qué es | todo el universo de interés | subconjunto que sí medimos |
+        | Media | $\mu$ (parámetro, fijo/desconocido) | $\bar{x}$ (estadístico, aleatorio) |
+        | Desv. | $\sigma$ | $s$ |
 
-    Un **estimador** ($\bar{x}$) es una variable aleatoria: si tomaras *otra* muestra, saldría
-    distinto. Esa variabilidad es el **error de muestreo**, y su magnitud es el **error estándar**:
+        Un **estimador** ($\bar{x}$) es una variable aleatoria: si tomaras *otra* muestra, saldría
+        distinto. Esa variabilidad es el **error de muestreo**, y su magnitud es el **error estándar**:
 
-    $$\mathrm{SE}(\bar{x}) = \frac{\sigma}{\sqrt{n}}$$
+        $$\mathrm{SE}(\bar{x}) = \frac{\sigma}{\sqrt{n}}$$
 
-    La pieza que hace posible **toda** la inferencia clásica es el **Teorema del Límite Central (TLC)**:
+        La pieza que hace posible **toda** la inferencia clásica es el **Teorema del Límite Central (TLC)**:
 
-    > Sin importar la forma de la población, la distribución de $\bar{x}$ tiende a una **Normal**
-    > $\mathcal{N}\!\left(\mu,\ \sigma^2/n\right)$ cuando $n$ crece.
+        > Sin importar la forma de la población, la distribución de $\bar{x}$ tiende a una **Normal**
+        > $\mathcal{N}\!\left(\mu,\ \sigma^2/n\right)$ cuando $n$ crece.
 
-    ❓ *Pregunta socrática:* si la población es sesgadísima (p. ej. exponencial), ¿qué tiene que
-    pasar con $n$ para que $\bar{x}$ ya "parezca" normal? Compruébalo abajo.
-    """)
+        ❓ *Pregunta socrática:* si la población es sesgadísima (p. ej. exponencial), ¿qué tiene que
+        pasar con $n$ para que $\bar{x}$ ya "parezca" normal? Compruébalo abajo.
+        """
+    )
     return
 
 
@@ -170,25 +171,25 @@ def _(C, clt_n, clt_pop, clt_reps, clt_seed, new_ax, np, stats):
     clt_mean_emp = clt_means.mean()
     clt_mu = _mu
 
-    _fig, (_axL, _axR) = new_ax(figsize=(9.2, 3.6), ncols=2)
+    _fig, (axL, _axR) = new_ax(_figsize=(9.2, 3.6))
     _fig.subplots_adjust(wspace=0.28)
 
     # Izq: población
     _pop_draw = _samples.ravel()
-    _axL.hist(_pop_draw, bins=40, density=True, color=C["muted"], alpha=0.75)
-    _axL.axvline(_mu, color=C["danger"], lw=2, label=fr"$\mu={_mu:.2f}$")
-    _axL.set_title("Población (una muestra grande)")
-    _axL.set_xlabel("valor"); _axL.set_ylabel("densidad"); _axL.legend()
+    axL.hist(_pop_draw, bins=40, density=True, color=C["muted"], alpha=0.75)
+    axL.axvline(_mu, color=C["danger"], lw=2, label=fr"$\mu={_mu:.2f}$")
+    axL.set_title("Población (una muestra grande)")
+    axL.set_xlabel("valor"); axL.set_ylabel("densidad"); axL._legend()
 
     # Der: distribución muestral de la media
-    _axR.hist(clt_means, bins=40, density=True, color=C["primary"], alpha=0.65,
+    axR.hist(clt_means, bins=40, density=True, color=C["primary"], alpha=0.65,
              label=r"$\bar{x}$ simulada")
     _xx = np.linspace(clt_means.min(), clt_means.max(), 300)
-    _axR.plot(_xx, stats.norm.pdf(_xx, _mu, clt_se_theory), color=C["accent"], lw=2.5,
+    axR.plot(_xx, stats.norm.pdf(_xx, _mu, clt_se_theory), color=C["accent"], lw=2.5,
              label=r"$\mathcal{N}(\mu,\ \sigma^2/n)$ teórica")
-    _axR.axvline(_mu, color=C["danger"], lw=2)
-    _axR.set_title(f"Distribución muestral de $\\bar{{x}}$  (n={_n})")
-    _axR.set_xlabel(r"$\bar{x}$"); _axR.set_ylabel("densidad"); _axR.legend()
+    axR.axvline(_mu, color=C["danger"], lw=2)
+    axR.set_title(f"Distribución muestral de $\\bar{{x}}$  (n={_n})")
+    axR.set_xlabel(r"$\bar{x}$"); axR.set_ylabel("densidad"); axR._legend()
 
     _fig
     return clt_mean_emp, clt_mu, clt_se_emp, clt_se_theory
@@ -196,21 +197,23 @@ def _(C, clt_n, clt_pop, clt_reps, clt_seed, new_ax, np, stats):
 
 @app.cell
 def _(clt_mean_emp, clt_mu, clt_n, clt_se_emp, clt_se_theory, mo):
-    mo.md(rf"""
-    **Fórmula con tus valores actuales:**
+    mo.md(
+        rf"""
+        **Fórmula con tus valores actuales:**
 
-    $$\mathrm{{SE}}(\bar{{x}})=\frac{{\sigma}}{{\sqrt{{n}}}}=\frac{{\sigma}}{{\sqrt{{{int(clt_n.value)}}}}}
-    \;\approx\;{clt_se_theory:.4f}$$
+        $$\mathrm{{SE}}(\bar{{x}})=\frac{{\sigma}}{{\sqrt{{n}}}}=\frac{{\sigma}}{{\sqrt{{{int(clt_n.value)}}}}}
+        \;\approx\;{clt_se_theory:.4f}$$
 
-    | Cantidad | Teórico | Simulado (empírico) |
-    |---|---|---|
-    | Media de $\bar{{x}}$ | $\mu = {clt_mu:.3f}$ | ${clt_mean_emp:.3f}$ |
-    | Error estándar | ${clt_se_theory:.4f}$ | ${clt_se_emp:.4f}$ |
+        | Cantidad | Teórico | Simulado (empírico) |
+        |---|---|---|
+        | Media de $\bar{{x}}$ | $\mu = {clt_mu:.3f}$ | ${clt_mean_emp:.3f}$ |
+        | Error estándar | ${clt_se_theory:.4f}$ | ${clt_se_emp:.4f}$ |
 
-    🧠 **Intuición:** el histograma azul se vuelve **más estrecho y más normal** al subir $n$
-    (el SE cae como $1/\sqrt{{n}}$: para reducirlo a la mitad necesitas **4×** los datos).
-    Nota que la media muestral acierta en $\mu$ aunque la población sea muy asimétrica.
-    """)
+        🧠 **Intuición:** el histograma azul se vuelve **más estrecho y más normal** al subir $n$
+        (el SE cae como $1/\sqrt{{n}}$: para reducirlo a la mitad necesitas **4×** los datos).
+        Nota que la media muestral acierta en $\mu$ aunque la población sea muy asimétrica.
+        """
+    )
     return
 
 
@@ -243,28 +246,31 @@ def _(mo, quiz_clt):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# 2. DISTRIBUCIONES
+# ============================================================================
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 2 · Distribuciones de Probabilidad
+    mo.md(
+        r"""
+        ## 2 · Distribuciones de Probabilidad
 
-    Una **distribución** es el "molde" que asigna probabilidad a cada resultado posible.
-    Elegir la distribución correcta *es* modelar el fenómeno. Aquí las cinco fundamentales:
+        Una **distribución** es el "molde" que asigna probabilidad a cada resultado posible.
+        Elegir la distribución correcta *es* modelar el fenómeno. Aquí las cinco fundamentales:
 
-    - **Bernoulli** — un ensayo, dos resultados (éxito/fracaso). El ladrillo de todo.
-    - **Binomial** — número de éxitos en $n$ Bernoulli independientes.
-    - **Poisson** — conteos de eventos raros en un intervalo (llegadas, fallos, mutaciones).
-    - **Uniforme** — todos los valores igual de probables (máxima ignorancia / continua).
-    - **Normal** — el atractor universal (por el TLC); errores, sumas, promedios.
+        - **Bernoulli** — un ensayo, dos resultados (éxito/fracaso). El ladrillo de todo.
+        - **Binomial** — número de éxitos en $n$ Bernoulli independientes.
+        - **Poisson** — conteos de eventos raros en un intervalo (llegadas, fallos, mutaciones).
+        - **Uniforme** — todos los valores igual de probables (máxima ignorancia / continua).
+        - **Normal** — el atractor universal (por el TLC); errores, sumas, promedios.
 
-    Explora cada una: la fórmula ($\LaTeX$) usa **tus parámetros**, y se muestran media/varianza.
-    """)
+        Explora cada una: la fórmula ($\LaTeX$) usa **tus parámetros**, y se muestran media/varianza.
+        """
+    )
     return
 
 
@@ -311,89 +317,61 @@ def _(d_a, d_b, d_bp, d_lam, d_mu, d_n, d_p, d_sigma, dist_pick, mo):
 
 
 @app.cell
-def _(
-    C,
-    d_a,
-    d_b,
-    d_bp,
-    d_lam,
-    d_mu,
-    d_n,
-    d_p,
-    d_sigma,
-    dist_pick,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, d_a, d_b, d_bp, d_lam, d_mu, d_n, d_p, d_sigma, dist_pick, new_ax, np, stats):
     _sel = dist_pick.value
-    _fig, (_axP, _axC) = new_ax(figsize=(9.4, 3.6), ncols=2)
+    _fig, (axP, _axC) = new_ax(_figsize=(9.4, 3.6))
     _fig.subplots_adjust(wspace=0.28)
 
     if _sel == "Bernoulli":
         _p = float(d_bp.value)
         _k = np.array([0, 1]); _pmf = np.array([1 - _p, _p])
-        _axP.bar(_k, _pmf, width=0.5, color=C["primary"], alpha=0.85)
-        _axP.set_xticks([0, 1]); _axP.set_title("PMF Bernoulli")
-        _axC.step([0, 1, 2], [0, 1 - _p, 1.0], where="post", color=C["accent"], lw=2.5)
+        axP.bar(_k, _pmf, width=0.5, color=C["primary"], alpha=0.85)
+        axP.set_xticks([0, 1]); axP.set_title("PMF Bernoulli")
+        axC.step([0, 1, 2], [0, 1 - _p, 1.0], where="post", color=C["accent"], lw=2.5)
         _mean, _var = _p, _p * (1 - _p)
     elif _sel == "Binomial":
         _n = int(d_n.value); _p = float(d_p.value)
         _k = np.arange(0, _n + 1); _pmf = stats.binom.pmf(_k, _n, _p)
-        _axP.bar(_k, _pmf, color=C["primary"], alpha=0.85)
-        _axP.set_title("PMF Binomial")
-        _axC.step(_k, np.cumsum(_pmf), where="post", color=C["accent"], lw=2.5)
+        axP.bar(_k, _pmf, color=C["primary"], alpha=0.85)
+        axP.set_title("PMF Binomial")
+        axC.step(_k, np.cumsum(_pmf), where="post", color=C["accent"], lw=2.5)
         _mean, _var = _n * _p, _n * _p * (1 - _p)
     elif _sel == "Poisson":
         _lam = float(d_lam.value)
         _hi = int(max(10, _lam + 4 * np.sqrt(_lam) + 1))
         _k = np.arange(0, _hi); _pmf = stats.poisson.pmf(_k, _lam)
-        _axP.bar(_k, _pmf, color=C["primary"], alpha=0.85)
-        _axP.set_title("PMF Poisson")
-        _axC.step(_k, np.cumsum(_pmf), where="post", color=C["accent"], lw=2.5)
+        axP.bar(_k, _pmf, color=C["primary"], alpha=0.85)
+        axP.set_title("PMF Poisson")
+        axC.step(_k, np.cumsum(_pmf), where="post", color=C["accent"], lw=2.5)
         _mean, _var = _lam, _lam
     elif _sel == "Uniforme":
         _a = float(d_a.value); _b = float(d_b.value)
         if _b <= _a:
             _b = _a + 0.1
         _x = np.linspace(_a - 1, _b + 1, 500)
-        _axP.plot(_x, stats.uniform.pdf(_x, _a, _b - _a), color=C["primary"], lw=2.5)
-        _axP.fill_between(_x, stats.uniform.pdf(_x, _a, _b - _a), color=C["primary"], alpha=0.2)
-        _axP.set_title("PDF Uniforme")
-        _axC.plot(_x, stats.uniform.cdf(_x, _a, _b - _a), color=C["accent"], lw=2.5)
+        axP.plot(_x, stats.uniform.pdf(_x, _a, _b - _a), color=C["primary"], lw=2.5)
+        axP.fill_between(_x, stats.uniform.pdf(_x, _a, _b - _a), color=C["primary"], alpha=0.2)
+        axP.set_title("PDF Uniforme")
+        axC.plot(_x, stats.uniform.cdf(_x, _a, _b - _a), color=C["accent"], lw=2.5)
         _mean, _var = (_a + _b) / 2, (_b - _a) ** 2 / 12
     else:  # Normal
         _mu = float(d_mu.value); _sg = float(d_sigma.value)
         _x = np.linspace(_mu - 4 * _sg, _mu + 4 * _sg, 500)
-        _axP.plot(_x, stats.norm.pdf(_x, _mu, _sg), color=C["primary"], lw=2.5)
-        _axP.fill_between(_x, stats.norm.pdf(_x, _mu, _sg), color=C["primary"], alpha=0.2)
-        _axP.set_title("PDF Normal")
-        _axC.plot(_x, stats.norm.cdf(_x, _mu, _sg), color=C["accent"], lw=2.5)
+        axP.plot(_x, stats.norm.pdf(_x, _mu, _sg), color=C["primary"], lw=2.5)
+        axP.fill_between(_x, stats.norm.pdf(_x, _mu, _sg), color=C["primary"], alpha=0.2)
+        axP.set_title("PDF Normal")
+        axC.plot(_x, stats.norm.cdf(_x, _mu, _sg), color=C["accent"], lw=2.5)
         _mean, _var = _mu, _sg ** 2
 
-    _axP.set_xlabel("valor"); _axP.set_ylabel("probabilidad / densidad")
-    _axC.set_title("CDF acumulada"); _axC.set_xlabel("valor"); _axC.set_ylabel(r"$P(X \leq x)$")
+    axP.set_xlabel("valor"); axP.set_ylabel("probabilidad / densidad")
+    axC.set_title("CDF acumulada"); axC.set_xlabel("valor"); axC.set_ylabel(r"$P(X \leq x)$")
     dist_mean = float(_mean); dist_var = float(_var)
     _fig
     return dist_mean, dist_var
 
 
 @app.cell
-def _(
-    d_a,
-    d_b,
-    d_bp,
-    d_lam,
-    d_mu,
-    d_n,
-    d_p,
-    d_sigma,
-    dist_mean,
-    dist_pick,
-    dist_var,
-    mo,
-    np,
-):
+def _(d_a, d_b, d_bp, d_lam, d_mu, d_n, d_p, d_sigma, dist_mean, dist_pick, dist_var, mo, np):
     _sel = dist_pick.value
     if _sel == "Bernoulli":
         _p = float(d_bp.value)
@@ -465,40 +443,43 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# 3. SIGNIFICANCIA, VALOR p, TOLERANCIA DE RIESGO
+# ============================================================================
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 3 · Significancia, Valor $p$ y Tolerancia de Riesgo
+    mo.md(
+        r"""
+        ## 3 · Significancia, Valor $p$ y Tolerancia de Riesgo
 
-    Toda prueba de hipótesis es un **juicio bajo incertidumbre**:
+        Toda prueba de hipótesis es un **juicio bajo incertidumbre**:
 
-    - $H_0$ (nula): "no pasa nada" (el efecto es cero).
-    - $H_1$ (alternativa): "sí hay efecto".
+        - $H_0$ (nula): "no pasa nada" (el efecto es cero).
+        - $H_1$ (alternativa): "sí hay efecto".
 
-    Asumimos $H_0$ verdadera, calculamos un **estadístico** (aquí $Z$) y preguntamos:
-    *¿qué tan sorprendentes son mis datos si $H_0$ fuera cierta?* Esa sorpresa es el **valor $p$**:
+        Asumimos $H_0$ verdadera, calculamos un **estadístico** (aquí $Z$) y preguntamos:
+        *¿qué tan sorprendentes son mis datos si $H_0$ fuera cierta?* Esa sorpresa es el **valor $p$**:
 
-    $$p = P(\text{observar algo tan o más extremo} \mid H_0\ \text{cierta})$$
+        $$p = P(\text{observar algo tan o más extremo} \mid H_0\ \text{cierta})$$
 
-    Tú fijas de antemano tu **tolerancia de riesgo** $\alpha$ (típico 0.05): la probabilidad
-    máxima de **falso positivo** (error Tipo I) que estás dispuesto a aceptar. Regla: rechazas
-    $H_0$ si $p < \alpha$.
+        Tú fijas de antemano tu **tolerancia de riesgo** $\alpha$ (típico 0.05): la probabilidad
+        máxima de **falso positivo** (error Tipo I) que estás dispuesto a aceptar. Regla: rechazas
+        $H_0$ si $p < \alpha$.
 
-    | | $H_0$ es cierta | $H_0$ es falsa |
-    |---|---|---|
-    | **Rechazo $H_0$** | ❌ Error Tipo I ($\alpha$) | ✅ Acierto (**potencia** $=1-\beta$) |
-    | **No rechazo $H_0$** | ✅ Acierto | ❌ Error Tipo II ($\beta$) |
+        | | $H_0$ es cierta | $H_0$ es falsa |
+        |---|---|---|
+        | **Rechazo $H_0$** | ❌ Error Tipo I ($\alpha$) | ✅ Acierto (**potencia** $=1-\beta$) |
+        | **No rechazo $H_0$** | ✅ Acierto | ❌ Error Tipo II ($\beta$) |
 
-    $\alpha$ es *tu decisión* (tolerancia de riesgo); $\beta$ y la potencia dependen del efecto
-    real y de $n$. Bajar $\alpha$ te protege de falsos positivos **pero sacrifica potencia**.
-    Ese *trade-off* es el corazón del asunto.
-    """)
+        $\alpha$ es *tu decisión* (tolerancia de riesgo); $\beta$ y la potencia dependen del efecto
+        real y de $n$. Bajar $\alpha$ te protege de falsos positivos **pero sacrifica potencia**.
+        Ese *trade-off* es el corazón del asunto.
+        """
+    )
     return
 
 
@@ -520,31 +501,31 @@ def _(C, new_ax, np, sig_alpha, sig_d, sig_n, stats):
     _power = stats.norm.sf(_zc - _delta) + stats.norm.cdf(-_zc - _delta)
     _beta = 1 - _power
 
-    _fig, _ax = new_ax(figsize=(9.0, 4.2))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.2))
     _x = np.linspace(-4, _delta + 4, 800)
     _h0 = stats.norm.pdf(_x, 0, 1)
     _h1 = stats.norm.pdf(_x, _delta, 1)
 
-    _ax.plot(_x, _h0, color=C["slate"], lw=2, label=r"$H_0:\ Z\sim\mathcal{N}(0,1)$")
-    _ax.plot(_x, _h1, color=C["success"], lw=2, label=fr"$H_1:\ Z\sim\mathcal{{N}}({_delta:.2f},1)$")
+    ax.plot(_x, _h0, color=C["slate"], lw=2, label=r"$H_0:\ Z\sim\mathcal{N}(0,1)$")
+    ax.plot(_x, _h1, color=C["success"], lw=2, label=fr"$H_1:\ Z\sim\mathcal{{N}}({_delta:.2f},1)$")
 
     # Región de rechazo (alpha) bajo H0
     _rej = (_x <= -_zc) | (_x >= _zc)
-    _ax.fill_between(_x, _h0, where=_rej, color=C["danger"], alpha=0.35,
+    ax.fill_between(_x, _h0, where=_rej, color=C["danger"], alpha=0.35,
                     label=fr"$\alpha={_alpha:.3f}$ (Tipo I)")
     # beta: no rechazo bajo H1
     _acc = (_x > -_zc) & (_x < _zc)
-    _ax.fill_between(_x, _h1, where=_acc, color=C["accent"], alpha=0.30,
+    ax.fill_between(_x, _h1, where=_acc, color=C["accent"], alpha=0.30,
                     label=fr"$\beta={_beta:.3f}$ (Tipo II)")
     # potencia
-    _ax.fill_between(_x, _h1, where=_rej, color=C["success"], alpha=0.25,
+    ax.fill_between(_x, _h1, where=_rej, color=C["success"], alpha=0.25,
                     label=fr"potencia $={_power:.3f}$")
 
     for _v in (-_zc, _zc):
-        _ax.axvline(_v, color=C["danger"], ls="--", lw=1.3)
-    _ax.set_title("Errores Tipo I / II y potencia")
-    _ax.set_xlabel("estadístico $Z$"); _ax.set_ylabel("densidad")
-    _ax.legend(loc="upper right", fontsize=8.5)
+        ax.axvline(_v, color=C["danger"], ls="--", lw=1.3)
+    ax.set_title("Errores Tipo I / II y potencia")
+    ax.set_xlabel("estadístico $Z$"); ax.set_ylabel("densidad")
+    ax._legend(loc="upper right", fontsize=8.5)
 
     sig_zc = float(_zc); sig_power = float(_power); sig_beta = float(_beta); sig_delta = float(_delta)
     _fig
@@ -553,18 +534,20 @@ def _(C, new_ax, np, sig_alpha, sig_d, sig_n, stats):
 
 @app.cell
 def _(mo, sig_alpha, sig_beta, sig_d, sig_delta, sig_n, sig_power, sig_zc):
-    mo.md(rf"""
-    **Con tus valores** ($d={float(sig_d.value):.2f}$, $n={int(sig_n.value)}$, $\alpha={float(sig_alpha.value):.3f}$):
+    mo.md(
+        rf"""
+        **Con tus valores** ($d={float(sig_d.value):.2f}$, $n={int(sig_n.value)}$, $\alpha={float(sig_alpha.value):.3f}$):
 
-    $$z_{{\text{{crítico}}}}=\Phi^{{-1}}\!\left(1-\tfrac{{\alpha}}{{2}}\right)={sig_zc:.3f}
-    \qquad \delta = d\sqrt{{n}} = {sig_delta:.3f}$$
+        $$z_{{\text{{crítico}}}}=\Phi^{{-1}}\!\left(1-\tfrac{{\alpha}}{{2}}\right)={sig_zc:.3f}
+        \qquad \delta = d\sqrt{{n}} = {sig_delta:.3f}$$
 
-    $$\text{{potencia}} = 1-\beta = {sig_power:.3f}\qquad \beta = {sig_beta:.3f}$$
+        $$\text{{potencia}} = 1-\beta = {sig_power:.3f}\qquad \beta = {sig_beta:.3f}$$
 
-    🧠 **Lee la gráfica:** sube $n$ o el efecto $d$ → la curva verde ($H_1$) se aleja → **más
-    potencia**. Baja $\alpha$ → las líneas críticas se separan → menos falsos positivos pero
-    **más $\beta$** (menos potencia). No puedes minimizar ambos a la vez con $n$ fijo.
-    """)
+        🧠 **Lee la gráfica:** sube $n$ o el efecto $d$ → la curva verde ($H_1$) se aleja → **más
+        potencia**. Baja $\alpha$ → las líneas críticas se separan → menos falsos positivos pero
+        **más $\beta$** (menos potencia). No puedes minimizar ambos a la vez con $n$ fijo.
+        """
+    )
     return
 
 
@@ -574,18 +557,18 @@ def _(C, new_ax, np, sig_alpha, sig_zobs, stats):
     _p = 2 * stats.norm.sf(abs(_z))                 # dos colas
     _zc = stats.norm.ppf(1 - _alpha / 2)
 
-    _fig, _ax = new_ax(figsize=(9.0, 3.4))
+    _fig, _ax = new_ax(_figsize=(9.0, 3.4))
     _x = np.linspace(-5, 5, 800); _y = stats.norm.pdf(_x)
-    _ax.plot(_x, _y, color=C["slate"], lw=2)
+    ax.plot(_x, _y, color=C["slate"], lw=2)
     _tail = (_x <= -abs(_z)) | (_x >= abs(_z))
-    _ax.fill_between(_x, _y, where=_tail, color=C["primary"], alpha=0.45,
+    ax.fill_between(_x, _y, where=_tail, color=C["primary"], alpha=0.45,
                     label=fr"valor $p={_p:.4f}$")
-    _ax.axvline(_z, color=C["danger"], lw=2, label=fr"$z_{{obs}}={_z:.2f}$")
+    ax.axvline(_z, color=C["danger"], lw=2, label=fr"$z_{{obs}}={_z:.2f}$")
     for _v in (-_zc, _zc):
-        _ax.axvline(_v, color=C["accent"], ls="--", lw=1.2)
-    _ax.set_title("Valor $p$ como área en las colas")
-    _ax.set_xlabel("$Z$ bajo $H_0$"); _ax.set_ylabel("densidad")
-    _ax.legend(loc="upper right", fontsize=9)
+        ax.axvline(_v, color=C["accent"], ls="--", lw=1.2)
+    ax.set_title("Valor $p$ como área en las colas")
+    ax.set_xlabel("$Z$ bajo $H_0$"); ax.set_ylabel("densidad")
+    ax._legend(loc="upper right", fontsize=9)
 
     sig_pval = float(_p)
     _fig
@@ -661,42 +644,43 @@ def _(mo, quiz_p):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
+    return
+
+
+# ============================================================================
+# 4. PRUEBAS ESTADÍSTICAS
+# ============================================================================
+@app.cell
+def _(mo):
+    mo.md(
+        r"""
+        ## 4 · Pruebas Estadísticas — ¿cuál para qué?
+
+        La distribución de tus datos (y la pregunta) determina la prueba. Mapa de referencia:
+
+        | Situación / Distribución | Pregunta típica | Prueba | Estadístico |
+        |---|---|---|---|
+        | Proporción (Bernoulli/Binomial) | ¿$p = p_0$? | Prueba **binomial exacta** / $z$ de proporciones | $z=\dfrac{\hat p - p_0}{\sqrt{p_0(1-p_0)/n}}$ |
+        | Media, $\sigma$ conocida (Normal) | ¿$\mu = \mu_0$? | Prueba **$z$** | $z=\dfrac{\bar x-\mu_0}{\sigma/\sqrt n}$ |
+        | Media, $\sigma$ desconocida | ¿$\mu = \mu_0$? | Prueba **$t$** de Student | $t=\dfrac{\bar x-\mu_0}{s/\sqrt n}$ |
+        | Dos medias | ¿$\mu_1=\mu_2$? | **$t$** de 2 muestras (Welch) | $t=\dfrac{\bar x_1-\bar x_2}{\sqrt{s_1^2/n_1+s_2^2/n_2}}$ |
+        | $>2$ medias | ¿todas iguales? | **ANOVA** ($F$) | $F=\dfrac{\text{var. entre}}{\text{var. dentro}}$ |
+        | Conteos por categoría (Uniforme/multinomial) | ¿ajusta al modelo? | **$\chi^2$** bondad de ajuste | $\chi^2=\sum\dfrac{(O_i-E_i)^2}{E_i}$ |
+        | Dos categóricas | ¿independientes? | **$\chi^2$** de independencia | idem, tabla de contingencia |
+        | Tasa (Poisson) | ¿$\lambda=\lambda_0$? | Prueba **exacta de Poisson** | basada en $\sum X_i$ |
+        | Sin normalidad | ¿medianas iguales? | **No paramétricas** (Mann–Whitney, Wilcoxon, Kruskal–Wallis) | rangos |
+
+        Abajo, tres simuladores en vivo: **(a)** proporción, **(b)** medias ($t$), **(c)** bondad de
+        ajuste $\chi^2$ (para la Uniforme).
+        """
+    )
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 4 · Pruebas Estadísticas — ¿cuál para qué?
-
-    La distribución de tus datos (y la pregunta) determina la prueba. Mapa de referencia:
-
-    | Situación / Distribución | Pregunta típica | Prueba | Estadístico |
-    |---|---|---|---|
-    | Proporción (Bernoulli/Binomial) | ¿$p = p_0$? | Prueba **binomial exacta** / $z$ de proporciones | $z=\dfrac{\hat p - p_0}{\sqrt{p_0(1-p_0)/n}}$ |
-    | Media, $\sigma$ conocida (Normal) | ¿$\mu = \mu_0$? | Prueba **$z$** | $z=\dfrac{\bar x-\mu_0}{\sigma/\sqrt n}$ |
-    | Media, $\sigma$ desconocida | ¿$\mu = \mu_0$? | Prueba **$t$** de Student | $t=\dfrac{\bar x-\mu_0}{s/\sqrt n}$ |
-    | Dos medias | ¿$\mu_1=\mu_2$? | **$t$** de 2 muestras (Welch) | $t=\dfrac{\bar x_1-\bar x_2}{\sqrt{s_1^2/n_1+s_2^2/n_2}}$ |
-    | $>2$ medias | ¿todas iguales? | **ANOVA** ($F$) | $F=\dfrac{\text{var. entre}}{\text{var. dentro}}$ |
-    | Conteos por categoría (Uniforme/multinomial) | ¿ajusta al modelo? | **$\chi^2$** bondad de ajuste | $\chi^2=\sum\dfrac{(O_i-E_i)^2}{E_i}$ |
-    | Dos categóricas | ¿independientes? | **$\chi^2$** de independencia | idem, tabla de contingencia |
-    | Tasa (Poisson) | ¿$\lambda=\lambda_0$? | Prueba **exacta de Poisson** | basada en $\sum X_i$ |
-    | Sin normalidad | ¿medianas iguales? | **No paramétricas** (Mann–Whitney, Wilcoxon, Kruskal–Wallis) | rangos |
-
-    Abajo, tres simuladores en vivo: **(a)** proporción, **(b)** medias ($t$), **(c)** bondad de
-    ajuste $\chi^2$ (para la Uniforme).
-    """)
-    return
-
-
-@app.cell
-def _(mo):
-    mo.md(r"""
-    ### 4a · Prueba de proporción (Bernoulli / Binomial)
-    """)
+    mo.md(r"""### 4a · Prueba de proporción (Bernoulli / Binomial)""")
     return
 
 
@@ -740,9 +724,7 @@ def _(mo, prop_alpha, prop_k, prop_n, prop_p0, stats):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ### 4b · Prueba $t$ de dos muestras (Normal / comparar medias)
-    """)
+    mo.md(r"""### 4b · Prueba $t$ de dos muestras (Normal / comparar medias)""")
     return
 
 
@@ -765,14 +747,14 @@ def _(C, new_ax, np, stats, t_diff, t_n, t_sd, t_seed):
     _g2 = _rng.normal(_dif, _sd, _n)
     _t, _pval = stats.ttest_ind(_g1, _g2, equal_var=False)
 
-    _fig, _ax = new_ax(figsize=(8.6, 3.6))
+    _fig, _ax = new_ax(_figsize=(8.6, 3.6))
     _bins = np.linspace(min(_g1.min(), _g2.min()), max(_g1.max(), _g2.max()), 24)
-    _ax.hist(_g1, bins=_bins, alpha=0.55, color=C["primary"], label="Grupo A")
-    _ax.hist(_g2, bins=_bins, alpha=0.55, color=C["accent"], label="Grupo B")
-    _ax.axvline(_g1.mean(), color=C["primary"], lw=2, ls="--")
-    _ax.axvline(_g2.mean(), color=C["accent"], lw=2, ls="--")
-    _ax.set_title("Dos muestras: ¿misma media poblacional?")
-    _ax.set_xlabel("valor"); _ax.set_ylabel("frecuencia"); _ax.legend()
+    ax.hist(_g1, bins=_bins, alpha=0.55, color=C["primary"], label="Grupo A")
+    ax.hist(_g2, bins=_bins, alpha=0.55, color=C["accent"], label="Grupo B")
+    ax.axvline(_g1.mean(), color=C["primary"], lw=2, ls="--")
+    ax.axvline(_g2.mean(), color=C["accent"], lw=2, ls="--")
+    ax.set_title("Dos muestras: ¿misma media poblacional?")
+    ax.set_xlabel("valor"); ax.set_ylabel("frecuencia"); ax._legend()
 
     t_stat = float(_t); t_pval = float(_pval)
     t_m1 = float(_g1.mean()); t_m2 = float(_g2.mean())
@@ -803,9 +785,7 @@ def _(mo, t_alpha, t_m1, t_m2, t_pval, t_stat):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ### 4c · Bondad de ajuste $\chi^2$ (¿los datos son Uniformes?)
-    """)
+    mo.md(r"""### 4c · Bondad de ajuste $\chi^2$ (¿los datos son Uniformes?)""")
     return
 
 
@@ -832,13 +812,13 @@ def _(C, gof_N, gof_bias, gof_k, gof_seed, new_ax, np, stats):
     _exp = np.full(_k, _N / _k)
     _chi2, _pval = stats.chisquare(_obs, _exp)
 
-    _fig, _ax = new_ax(figsize=(8.6, 3.6))
+    _fig, _ax = new_ax(_figsize=(8.6, 3.6))
     _idx = np.arange(1, _k + 1)
-    _ax.bar(_idx - 0.19, _obs, width=0.38, color=C["primary"], alpha=0.85, label="Observado $O_i$")
-    _ax.bar(_idx + 0.19, _exp, width=0.38, color=C["muted"], alpha=0.85, label="Esperado $E_i$")
-    _ax.set_xticks(_idx)
-    _ax.set_title("Bondad de ajuste a la Uniforme")
-    _ax.set_xlabel("categoría"); _ax.set_ylabel("conteo"); _ax.legend()
+    ax.bar(_idx - 0.19, _obs, width=0.38, color=C["primary"], alpha=0.85, label="Observado $O_i$")
+    ax.bar(_idx + 0.19, _exp, width=0.38, color=C["muted"], alpha=0.85, label="Esperado $E_i$")
+    ax.set_xticks(_idx)
+    ax.set_title("Bondad de ajuste a la Uniforme")
+    ax.set_xlabel("categoría"); ax.set_ylabel("conteo"); ax._legend()
 
     gof_chi2 = float(_chi2); gof_pval = float(_pval); gof_df = _k - 1
     _fig
@@ -867,24 +847,27 @@ def _(gof_alpha, gof_chi2, gof_df, gof_pval, mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# 5. REGRESIÓN
+# ============================================================================
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 5 · Regresión Lineal y Logística
+    mo.md(
+        r"""
+        ## 5 · Regresión Lineal y Logística
 
-    La regresión **modela una relación**. La diferencia clave es *qué* predice:
+        La regresión **modela una relación**. La diferencia clave es *qué* predice:
 
-    - **Lineal** — predice un número continuo: $\hat y = \beta_0 + \beta_1 x$.
-    - **Logística** — predice una *probabilidad* (salida binaria 0/1) vía la sigmoide.
+        - **Lineal** — predice un número continuo: $\hat y = \beta_0 + \beta_1 x$.
+        - **Logística** — predice una *probabilidad* (salida binaria 0/1) vía la sigmoide.
 
-    ### 5a · Regresión lineal (mínimos cuadrados, OLS)
-    """)
+        ### 5a · Regresión lineal (mínimos cuadrados, OLS)
+        """
+    )
     return
 
 
@@ -913,13 +896,13 @@ def _(C, lin_b0, lin_b1, lin_n, lin_noise, lin_seed, new_ax, np):
     _ss_tot = np.sum((_y - _y.mean()) ** 2)
     _r2 = 1 - _ss_res / _ss_tot if _ss_tot > 0 else 0.0
 
-    _fig, (_ax1, _ax2) = new_ax(figsize=(9.4, 3.6), ncols=2)
+    _fig, (_ax1, _ax2) = new_ax(_figsize=(9.4, 3.6))
     _fig.subplots_adjust(wspace=0.28)
     _ax1.scatter(_x, _y, s=18, color=C["primary"], alpha=0.6, label="datos")
     _xs = np.array([_x.min(), _x.max()])
     _ax1.plot(_xs, _b0h + _b1h * _xs, color=C["danger"], lw=2.5, label="ajuste OLS")
     _ax1.plot(_xs, _b0 + _b1 * _xs, color=C["success"], lw=1.8, ls="--", label="recta real")
-    _ax1.set_title("Ajuste lineal"); _ax1.set_xlabel("x"); _ax1.set_ylabel("y"); _ax1.legend(fontsize=8.5)
+    _ax1.set_title("Ajuste lineal"); _ax1.set_xlabel("x"); _ax1.set_ylabel("y"); _ax1._legend(fontsize=8.5)
 
     _resid = _y - _yhat
     _ax2.scatter(_yhat, _resid, s=16, color=C["purple"], alpha=0.6)
@@ -934,22 +917,22 @@ def _(C, lin_b0, lin_b1, lin_n, lin_noise, lin_seed, new_ax, np):
 
 @app.cell
 def _(lin_b0h, lin_b1h, lin_r2, mo):
-    mo.md(rf"""
-    $$\hat y = \hat\beta_0 + \hat\beta_1 x = {lin_b0h:.3f} + {lin_b1h:.3f}\,x
-    \qquad R^2 = {lin_r2:.3f}$$
+    mo.md(
+        rf"""
+        $$\hat y = \hat\beta_0 + \hat\beta_1 x = {lin_b0h:.3f} + {lin_b1h:.3f}\,x
+        \qquad R^2 = {lin_r2:.3f}$$
 
-    $R^2$ es la fracción de varianza de $y$ explicada por el modelo. 🧠 Sube el ruido $\sigma$:
-    $R^2$ cae aunque la pendiente estimada siga siendo insesgada. Baja $n$: la estimación se
-    vuelve inestable (re-muestrea con la semilla y verás cuánto brinca $\hat\beta_1$).
-    """)
+        $R^2$ es la fracción de varianza de $y$ explicada por el modelo. 🧠 Sube el ruido $\sigma$:
+        $R^2$ cae aunque la pendiente estimada siga siendo insesgada. Baja $n$: la estimación se
+        vuelve inestable (re-muestrea con la semilla y verás cuánto brinca $\hat\beta_1$).
+        """
+    )
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ### 5b · Regresión logística
-    """)
+    mo.md(r"""### 5b · Regresión logística""")
     return
 
 
@@ -969,7 +952,6 @@ def _(np):
             if np.max(np.abs(step)) < 1e-8:
                 break
         return beta
-
     return (fit_logistic,)
 
 
@@ -1006,13 +988,13 @@ def _(C, fit_logistic, log_b0, log_b1, log_n, log_seed, log_thr, new_ax, np):
     _FP = int(np.sum(_pred & ~_yb)); _FN = int(np.sum(~_pred & _yb))
     _acc = (_TP + _TN) / _n
 
-    _fig, _ax = new_ax(figsize=(8.6, 3.8))
+    _fig, _ax = new_ax(_figsize=(8.6, 3.8))
     _jit = _rng.normal(0, 0.02, _n)
-    _ax.scatter(_x, _y + _jit, s=16, color=C["primary"], alpha=0.4, label="datos (0/1)")
-    _ax.plot(_grid, _phat, color=C["danger"], lw=2.5, label="prob. estimada (sigmoide)")
-    _ax.axhline(_thr, color=C["accent"], ls="--", lw=1.5, label=f"umbral={_thr:.2f}")
-    _ax.set_title("Regresión logística"); _ax.set_xlabel("x"); _ax.set_ylabel("y / P(y=1)")
-    _ax.set_ylim(-0.1, 1.1); _ax.legend(fontsize=8.5, loc="center right")
+    ax.scatter(_x, _y + _jit, s=16, color=C["primary"], alpha=0.4, label="datos (0/1)")
+    ax.plot(_grid, _phat, color=C["danger"], lw=2.5, label="prob. estimada (sigmoide)")
+    ax.axhline(_thr, color=C["accent"], ls="--", lw=1.5, label=f"umbral={_thr:.2f}")
+    ax.set_title("Regresión logística"); ax.set_xlabel("x"); ax.set_ylabel("y / P(y=1)")
+    ax.set_ylim(-0.1, 1.1); ax._legend(fontsize=8.5, loc="center right")
 
     log_b0h = _b0h; log_b1h = _b1h; log_acc = float(_acc)
     log_TP, log_TN, log_FP, log_FN = _TP, _TN, _FP, _FN
@@ -1022,48 +1004,53 @@ def _(C, fit_logistic, log_b0, log_b1, log_n, log_seed, log_thr, new_ax, np):
 
 @app.cell
 def _(log_FN, log_FP, log_TN, log_TP, log_acc, log_b0h, log_b1h, mo):
-    mo.md(rf"""
-    $$\log\!\frac{{p}}{{1-p}} = \beta_0+\beta_1 x = {log_b0h:.3f} + {log_b1h:.3f}\,x
-    \qquad\Longrightarrow\qquad p=\frac{{1}}{{1+e^{{-({log_b0h:.3f}+{log_b1h:.3f}\,x)}}}}$$
+    mo.md(
+        rf"""
+        $$\log\!\frac{{p}}{{1-p}} = \beta_0+\beta_1 x = {log_b0h:.3f} + {log_b1h:.3f}\,x
+        \qquad\Longrightarrow\qquad p=\frac{{1}}{{1+e^{{-({log_b0h:.3f}+{log_b1h:.3f}\,x)}}}}$$
 
-    **Matriz de confusión** al umbral elegido &nbsp;($\text{{exactitud}}={log_acc:.3f}$):
+        **Matriz de confusión** al umbral elegido &nbsp;($\text{{exactitud}}={log_acc:.3f}$):
 
-    | | Predijo 1 | Predijo 0 |
-    |---|---|---|
-    | **Real 1** | TP = {log_TP} | FN = {log_FN} |
-    | **Real 0** | FP = {log_FP} | TN = {log_TN} |
+        | | Predijo 1 | Predijo 0 |
+        |---|---|---|
+        | **Real 1** | TP = {log_TP} | FN = {log_FN} |
+        | **Real 0** | FP = {log_FP} | TN = {log_TN} |
 
-    🧠 Mueve el **umbral**: bajarlo captura más positivos (↑TP) pero dispara falsos positivos
-    (↑FP). Ese es el mismo *trade-off* $\alpha/\beta$ de la sección 3, ahora en clasificación.
-    El coeficiente $\beta_1={log_b1h:.3f}$ es el cambio en **log-odds** por unidad de $x$;
-    $e^{{\beta_1}}={__import__('math').exp(log_b1h):.3f}$ es el **odds ratio**.
-    """)
+        🧠 Mueve el **umbral**: bajarlo captura más positivos (↑TP) pero dispara falsos positivos
+        (↑FP). Ese es el mismo *trade-off* $\alpha/\beta$ de la sección 3, ahora en clasificación.
+        El coeficiente $\beta_1={log_b1h:.3f}$ es el cambio en **log-odds** por unidad de $x$;
+        $e^{{\beta_1}}={__import__('math').exp(log_b1h):.3f}$ es el **odds ratio**.
+        """
+    )
     return
 
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# 6. CORRELACIÓN Y CAUSALIDAD
+# ============================================================================
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 6 · Correlación y Causalidad
+    mo.md(
+        r"""
+        ## 6 · Correlación y Causalidad
 
-    La **correlación de Pearson** $r\in[-1,1]$ mide *asociación lineal*:
+        La **correlación de Pearson** $r\in[-1,1]$ mide *asociación lineal*:
 
-    $$r=\frac{\sum (x_i-\bar x)(y_i-\bar y)}{\sqrt{\sum (x_i-\bar x)^2}\,\sqrt{\sum (y_i-\bar y)^2}}$$
+        $$r=\frac{\sum (x_i-\bar x)(y_i-\bar y)}{\sqrt{\sum (x_i-\bar x)^2}\,\sqrt{\sum (y_i-\bar y)^2}}$$
 
-    Dos advertencias que valen oro:
+        Dos advertencias que valen oro:
 
-    1. $r$ solo ve lo **lineal**. Una relación fuerte pero curva puede dar $r\approx 0$.
-    2. **Correlación $\neq$ causalidad.** Una tercera variable (*confusor*) puede crear
-       correlación entre cosas que no se causan.
-    """)
+        1. $r$ solo ve lo **lineal**. Una relación fuerte pero curva puede dar $r\approx 0$.
+        2. **Correlación $\neq$ causalidad.** Una tercera variable (*confusor*) puede crear
+           correlación entre cosas que no se causan.
+        """
+    )
     return
 
 
@@ -1085,10 +1072,10 @@ def _(C, cor_n, cor_r, cor_seed, new_ax, np):
     _y = _r * _z1 + np.sqrt(max(1 - _r ** 2, 0)) * _z2
     _remp = float(np.corrcoef(_x, _y)[0, 1])
 
-    _fig, _ax = new_ax(figsize=(6.4, 4.2))
-    _ax.scatter(_x, _y, s=18, color=C["primary"], alpha=0.55)
-    _ax.set_title(fr"$r_{{objetivo}}={_r:.2f}$   ·   $r_{{empírico}}={_remp:.2f}$")
-    _ax.set_xlabel("x"); _ax.set_ylabel("y")
+    _fig, _ax = new_ax(_figsize=(6.4, 4.2))
+    ax.scatter(_x, _y, s=18, color=C["primary"], alpha=0.55)
+    ax.set_title(fr"$r_{{objetivo}}={_r:.2f}$   ·   $r_{{empírico}}={_remp:.2f}$")
+    ax.set_xlabel("x"); ax.set_ylabel("y")
     cor_remp = _remp
     _fig
     return (cor_remp,)
@@ -1096,11 +1083,13 @@ def _(C, cor_n, cor_r, cor_seed, new_ax, np):
 
 @app.cell
 def _(cor_remp, mo):
-    mo.md(rf"""
-    $r$ empírico en la muestra: $\;{cor_remp:.3f}$. 🧠 Con $n$ pequeño, el $r$ observado brinca
-    mucho respecto al objetivo (variabilidad de muestreo, sección 1). Con $r=0$ verás una nube
-    sin estructura.
-    """)
+    mo.md(
+        rf"""
+        $r$ empírico en la muestra: $\;{cor_remp:.3f}$. 🧠 Con $n$ pequeño, el $r$ observado brinca
+        mucho respecto al objetivo (variabilidad de muestreo, sección 1). Con $r=0$ verás una nube
+        sin estructura.
+        """
+    )
     return
 
 
@@ -1121,7 +1110,7 @@ def _(mo):
 
 
 @app.cell
-def _(C, np):
+def _(C, new_ax, np):
     # Cuarteto de Anscombe (valores clásicos)
     _x = np.array([10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5], float)
     _x4 = np.array([8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8], float)
@@ -1131,8 +1120,9 @@ def _(C, np):
     _y4 = np.array([6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89])
     _sets = [(_x, _y1, "I"), (_x, _y2, "II"), (_x, _y3, "III"), (_x4, _y4, "IV")]
 
+    _fig, _axes = new_ax(_figsize=(9.4, 6.0))
     import matplotlib.pyplot as _plt
-    _fig, _axes = _plt.subplots(2, 2, figsize=(9.4, 6.0))
+    _fig, _axes = _plt.subplots(2, 2, _figsize=(9.4, 6.0))
     for _ax, (_xx, _yy, _name) in zip(_axes.ravel(), _sets):
         _b1, _b0 = np.polyfit(_xx, _yy, 1)
         _rr = np.corrcoef(_xx, _yy)[0, 1]
@@ -1149,9 +1139,7 @@ def _(C, np):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ### 6b · El confusor: cómo nace una correlación *espuria*
-    """)
+    mo.md(r"""### 6b · El confusor: cómo nace una correlación *espuria*""")
     return
 
 
@@ -1185,7 +1173,7 @@ def _(C, conf_n, conf_seed, conf_xy, conf_zx, conf_zy, new_ax, np):
     _denom = np.sqrt(max((1 - _rxz ** 2) * (1 - _ryz ** 2), 1e-12))
     _r_partial = float((_rxy - _rxz * _ryz) / _denom)
 
-    _fig, (_ax1, _ax2) = new_ax(figsize=(9.4, 3.8), ncols=2)
+    _fig, (_ax1, _ax2) = new_ax(_figsize=(9.4, 3.8))
     _fig.subplots_adjust(wspace=0.28)
     _ax1.scatter(_X, _Y, s=16, color=C["danger"], alpha=0.5)
     _ax1.set_title(fr"Correlación ingenua  $X\!-\!Y$:  $r={_r_naive:.2f}$")
@@ -1240,24 +1228,27 @@ def _(conf_c, conf_naive, conf_partial, mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# 7. LABORATORIO DE PRUEBAS DE HIPÓTESIS — SLIDERS INTERACTIVOS
+# ============================================================================
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ## 7 · Laboratorio de Pruebas de Hipótesis — Configura tu Escenario
+    mo.md(
+        r"""
+        ## 7 · Laboratorio de Pruebas de Hipótesis — Configura tu Escenario
 
-    Elige el tipo de prueba, define $H_0$ y los parámetros con **sliders**, y observa:
-    - la **distribución bajo $H_0$** con región de rechazo,
-    - la **fórmula con tus valores actuales** (estilo Excel),
-    - el **valor $p$**, **estadístico** y **decisión final**.
+        Elige el tipo de prueba, define $H_0$ y los parámetros con **sliders**, y observa:
+        - la **distribución bajo $H_0$** con región de rechazo,
+        - la **fórmula con tus valores actuales** (estilo Excel),
+        - el **valor $p$**, **estadístico** y **decisión final**.
 
-    > 💡 Cambia cualquier slider y todo se recalcula al instante (reactividad marimo).
-    """)
+        > 💡 Cambia cualquier slider y todo se recalcula al instante (reactividad marimo).
+        """
+    )
     return
 
 
@@ -1287,31 +1278,74 @@ def _(mo):
 
 
 @app.cell
-def _(mo):
-    hypo_z_mu0 = mo.ui.slider(-10.0, 10.0, value=0.0, step=0.1, label=r"$H_0:\ \mu_0$", show_value=True)
-    hypo_z_sigma = mo.ui.slider(0.1, 10.0, value=1.5, step=0.1, label=r"$\sigma$ (poblacional)", show_value=True)
-    hypo_z_n = mo.ui.slider(1, 500, value=30, step=1, label="$n$", show_value=True)
-    hypo_z_xbar = mo.ui.slider(-10.0, 10.0, value=0.5, step=0.1, label=r"$\bar{x}$ (observada)", show_value=True)
-    mo.vstack([
-        mo.md("**Parámetros — Prueba Z para la media (σ conocida)**"),
-        hypo_z_mu0, hypo_z_sigma, hypo_z_n, hypo_z_xbar,
-    ])
-    return hypo_z_mu0, hypo_z_n, hypo_z_sigma, hypo_z_xbar
+def _(hypo_test_type, mo):
+    _sel = hypo_test_type.value
+    if _sel == "Prueba Z: media (σ conocida)":
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Prueba Z para la media (σ conocida)**"),
+            mo.ui.slider(-10.0, 10.0, value=0.0, step=0.1, label=r"$H_0:\ \mu_0$ (media poblacional bajo nula)", show_value=True),
+            mo.ui.slider(0.1, 10.0, value=1.5, step=0.1, label=r"$\sigma$ (desv. estándar poblacional conocida)", show_value=True),
+            mo.ui.slider(1, 500, value=30, step=1, label="$n$ (tamaño de muestra)", show_value=True),
+            mo.ui.slider(-10.0, 10.0, value=0.5, step=0.1, label=r"$\bar{x}$ (media muestral observada)", show_value=True),
+        ])
+    elif _sel == "Prueba t: media (σ desconocida)":
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Prueba t de Student para la media**"),
+            mo.ui.slider(-10.0, 10.0, value=0.0, step=0.1, label=r"$H_0:\ \mu_0$", show_value=True),
+            mo.ui.slider(1, 200, value=25, step=1, label="$n$", show_value=True),
+            mo.ui.slider(-10.0, 10.0, value=0.6, step=0.1, label=r"$\bar{x}$ (media muestral)", show_value=True),
+            mo.ui.slider(0.1, 10.0, value=1.2, step=0.1, label="$s$ (desv. estándar muestral)", show_value=True),
+        ])
+    elif _sel == "Prueba Z: proporción":
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Prueba Z para proporción**"),
+            mo.ui.slider(0.01, 0.99, value=0.5, step=0.01, label=r"$H_0:\ p_0$ (proporción bajo nula)", show_value=True),
+            mo.ui.slider(10, 1000, value=100, step=5, label="$n$ (ensayos)", show_value=True),
+            mo.ui.slider(0, 1000, value=60, step=1, label="$k$ (éxitos observados)", show_value=True),
+        ])
+    elif _sel == "Prueba t: dos muestras (Welch)":
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Prueba t de dos muestras (Welch, varianzas desiguales)**"),
+            mo.ui.slider(-10.0, 10.0, value=0.0, step=0.1, label=r"$H_0:\ \mu_1-\mu_2 = \Delta_0$", show_value=True),
+            mo.ui.slider(2, 200, value=30, step=1, label="$n_1$", show_value=True),
+            mo.ui.slider(2, 200, value=30, step=1, label="$n_2$", show_value=True),
+            mo.ui.slider(-10.0, 10.0, value=0.8, step=0.1, label=r"$\bar{x}_1$", show_value=True),
+            mo.ui.slider(-10.0, 10.0, value=0.0, step=0.1, label=r"$\bar{x}_2$", show_value=True),
+            mo.ui.slider(0.1, 10.0, value=1.5, step=0.1, label="$s_1$", show_value=True),
+            mo.ui.slider(0.1, 10.0, value=1.2, step=0.1, label="$s_2$", show_value=True),
+        ])
+    elif _sel == "Prueba χ²: bondad de ajuste":
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Bondad de ajuste χ² (multinomial vs teórica)**"),
+            mo.ui.slider(2, 12, value=6, step=1, label="$k$ (número de categorías)", show_value=True),
+            mo.ui.slider(10, 2000, value=300, step=10, label="$N$ (tamaño total)", show_value=True),
+            mo.ui.slider(0.0, 1.0, value=0.2, step=0.02, label="Sesgo en probabilidades teóricas (0=uniforme)", show_value=True),
+            mo.ui.slider(0, 40, value=1, step=1, label="Semilla (re-muestrear observados)", show_value=True),
+        ])
+    elif _sel == "Prueba χ²: independencia (2×2)":
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Independencia χ² (tabla 2×2)**"),
+            mo.ui.slider(0, 200, value=50, step=1, label="$a$ (fila 1, col 1)", show_value=True),
+            mo.ui.slider(0, 200, value=30, step=1, label="$b$ (fila 1, col 2)", show_value=True),
+            mo.ui.slider(0, 200, value=20, step=1, label="$c$ (fila 2, col 1)", show_value=True),
+            mo.ui.slider(0, 200, value=40, step=1, label="$d$ (fila 2, col 2)", show_value=True),
+        ])
+    else:  # Prueba F: varianzas
+        _controls = mo.vstack([
+            mo.md("**Parámetros — Prueba F para igualdad de varianzas**"),
+            mo.ui.slider(2, 200, value=25, step=1, label="$n_1$", show_value=True),
+            mo.ui.slider(2, 200, value=30, step=1, label="$n_2$", show_value=True),
+            mo.ui.slider(0.1, 10.0, value=2.0, step=0.1, label="$s_1^2$ (varianza muestra 1)", show_value=True),
+            mo.ui.slider(0.1, 10.0, value=1.0, step=0.1, label="$s_2^2$ (varianza muestra 2)", show_value=True),
+        ])
+    _controls
 
 
+# ============================================================================
+# MOSTRAR SOLO LA PRUEBA SELECCIONADA (renderizado condicional via markdown)
+# ============================================================================
 @app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_tail,
-    hypo_z_mu0,
-    hypo_z_n,
-    hypo_z_sigma,
-    hypo_z_xbar,
-    new_ax,
-    np,
-    stats,
-):
+def _(hypo_test_type, mo):
     _mu0 = float(hypo_z_mu0.value)
     _sigma = float(hypo_z_sigma.value)
     _n = int(hypo_z_n.value)
@@ -1339,10 +1373,10 @@ def _(
         _rej = _z <= _zc
 
     # Gráfica
-    _fig, _ax = new_ax(figsize=(9.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.0))
     _x = np.linspace(-4, 4, 800)
     _y = stats.norm.pdf(_x)
-    _ax.plot(_x, _y, color=C["slate"], lw=2, label=r"$H_0:\ Z\sim\mathcal{N}(0,1)$")
+    ax.plot(_x, _y, color=C["slate"], lw=2, label=r"$H_0:\ Z\sim\mathcal{N}(0,1)$")
 
     if _tail == "Dos colas":
         _rej_mask = (_x <= -_zc) | (_x >= _zc)
@@ -1350,12 +1384,12 @@ def _(
         _rej_mask = _x >= _zc
     else:
         _rej_mask = _x <= _zc
-    _ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
-    _ax.axvline(_z, color=C["primary"], lw=2.5, label=fr"$z_{{obs}}={_z:.3f}$")
+    ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
+    ax.axvline(_z, color=C["primary"], lw=2.5, label=fr"$z_{{obs}}={_z:.3f}$")
     for _v in ([-_zc, _zc] if _tail == "Dos colas" else [_zc]):
-        _ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
-    _ax.set_title("Distribución bajo $H_0$ (Normal estándar) — Prueba Z para la media")
-    _ax.set_xlabel("$Z$"); _ax.set_ylabel("densidad"); _ax.legend(loc="upper right", fontsize=8.5)
+        ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
+    ax.set_title("Distribución bajo $H_0$ (Normal estándar) — Prueba Z para la media")
+    ax.set_xlabel("$Z$"); ax.set_ylabel("densidad"); ax._legend(loc="upper right", fontsize=8.5)
 
     hypo_z_stat = _z; hypo_z_pval = _p; hypo_z_crit = _zc; hypo_z_reject = _rej; hypo_z_se = _se
     _fig
@@ -1363,21 +1397,7 @@ def _(
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_tail,
-    hypo_z_crit,
-    hypo_z_mu0,
-    hypo_z_n,
-    hypo_z_pval,
-    hypo_z_reject,
-    hypo_z_se,
-    hypo_z_sigma,
-    hypo_z_stat,
-    hypo_z_xbar,
-    mo,
-    np,
-):
+def _(hypo_alpha, hypo_tail, hypo_z_mu0, hypo_z_n, hypo_z_sigma, hypo_z_xbar, hypo_z_crit, hypo_z_pval, hypo_z_reject, hypo_z_se, hypo_z_stat, mo):
     _mu0 = float(hypo_z_mu0.value); _sigma = float(hypo_z_sigma.value)
     _n = int(hypo_z_n.value); _xbar = float(hypo_z_xbar.value)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
@@ -1414,6 +1434,7 @@ def _(
     return
 
 
+# —————— 7b: t-test media (σ desconocida) ——————
 @app.cell
 def _(mo):
     hypo_t_mu0 = mo.ui.slider(-10.0, 10.0, value=0.0, step=0.1, label=r"$H_0:\ \mu_0$", show_value=True)
@@ -1428,18 +1449,7 @@ def _(mo):
 
 
 @app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_t_mu0,
-    hypo_t_n,
-    hypo_t_s,
-    hypo_t_xbar,
-    hypo_tail,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, hypo_alpha, hypo_tail, hypo_t_mu0, hypo_t_n, hypo_t_s, hypo_t_xbar, new_ax, np, stats):
     _mu0 = float(hypo_t_mu0.value); _n = int(hypo_t_n.value)
     _xbar = float(hypo_t_xbar.value); _s = float(hypo_t_s.value)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
@@ -1460,52 +1470,30 @@ def _(
         _tc = stats.t.ppf(_alpha, _df)
         _rej = _t <= _tc
 
-    _fig, _ax = new_ax(figsize=(9.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.0))
     _x = np.linspace(-4, 4, 800)
     _y = stats.t.pdf(_x, _df)
-    _ax.plot(_x, _y, color=C["slate"], lw=2, label=fr"$H_0:\ t\sim t_{{{_df}}}$")
+    ax.plot(_x, _y, color=C["slate"], lw=2, label=fr"$H_0:\ t\sim t_{{{_df}}}$")
     if _tail == "Dos colas":
         _rej_mask = (_x <= -_tc) | (_x >= _tc)
     elif _tail == "Cola derecha (>)":
         _rej_mask = _x >= _tc
     else:
         _rej_mask = _x <= _tc
-    _ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
-    _ax.axvline(_t, color=C["primary"], lw=2.5, label=fr"$t_{{obs}}={_t:.3f}$")
+    ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
+    ax.axvline(_t, color=C["primary"], lw=2.5, label=fr"$t_{{obs}}={_t:.3f}$")
     for _v in ([-_tc, _tc] if _tail == "Dos colas" else [_tc]):
-        _ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
-    _ax.set_title(f"Distribución $t$ bajo $H_0$ (g.l.={_df}) — Prueba t para la media")
-    _ax.set_xlabel("$t$"); _ax.set_ylabel("densidad"); _ax.legend(loc="upper right", fontsize=8.5)
+        ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
+    ax.set_title(f"Distribución $t$ bajo $H_0$ (g.l.={_df}) — Prueba t para la media")
+    ax.set_xlabel("$t$"); ax.set_ylabel("densidad"); ax._legend(loc="upper right", fontsize=8.5)
 
     hypo_t_stat = _t; hypo_t_pval = _p; hypo_t_crit = _tc; hypo_t_reject = _rej; hypo_t_se = _se; hypo_t_df = _df
     _fig
-    return (
-        hypo_t_crit,
-        hypo_t_df,
-        hypo_t_pval,
-        hypo_t_reject,
-        hypo_t_se,
-        hypo_t_stat,
-    )
+    return hypo_t_crit, hypo_t_df, hypo_t_pval, hypo_t_reject, hypo_t_se, hypo_t_stat
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_t_crit,
-    hypo_t_df,
-    hypo_t_mu0,
-    hypo_t_n,
-    hypo_t_pval,
-    hypo_t_reject,
-    hypo_t_s,
-    hypo_t_se,
-    hypo_t_stat,
-    hypo_t_xbar,
-    hypo_tail,
-    mo,
-    np,
-):
+def _(hypo_alpha, hypo_tail, hypo_t_mu0, hypo_t_n, hypo_t_s, hypo_t_xbar, hypo_t_crit, hypo_t_df, hypo_t_pval, hypo_t_reject, hypo_t_se, hypo_t_stat, mo, np):
     _mu0 = float(hypo_t_mu0.value); _n = int(hypo_t_n.value)
     _xbar = float(hypo_t_xbar.value); _s = float(hypo_t_s.value)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
@@ -1541,6 +1529,7 @@ def _(
     return
 
 
+# —————— 7c: Z-test proporción ——————
 @app.cell
 def _(mo):
     hypo_p_p0 = mo.ui.slider(0.01, 0.99, value=0.5, step=0.01, label=r"$H_0:\ p_0$", show_value=True)
@@ -1554,17 +1543,7 @@ def _(mo):
 
 
 @app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_p_k,
-    hypo_p_n,
-    hypo_p_p0,
-    hypo_tail,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, hypo_alpha, hypo_tail, hypo_p_k, hypo_p_n, hypo_p_p0, new_ax, np, stats):
     _p0 = float(hypo_p_p0.value); _n = int(hypo_p_n.value); _k = min(int(hypo_p_k.value), _n)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
     _phat = _k / _n
@@ -1584,50 +1563,30 @@ def _(
         _zc = stats.norm.ppf(_alpha)
         _rej = _z <= _zc
 
-    _fig, _ax = new_ax(figsize=(9.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.0))
     _x = np.linspace(-4, 4, 800)
     _y = stats.norm.pdf(_x)
-    _ax.plot(_x, _y, color=C["slate"], lw=2, label=r"$H_0:\ Z\sim\mathcal{N}(0,1)$")
+    ax.plot(_x, _y, color=C["slate"], lw=2, label=r"$H_0:\ Z\sim\mathcal{N}(0,1)$")
     if _tail == "Dos colas":
         _rej_mask = (_x <= -_zc) | (_x >= _zc)
     elif _tail == "Cola derecha (>)":
         _rej_mask = _x >= _zc
     else:
         _rej_mask = _x <= _zc
-    _ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
-    _ax.axvline(_z, color=C["primary"], lw=2.5, label=fr"$z_{{obs}}={_z:.3f}$")
+    ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
+    ax.axvline(_z, color=C["primary"], lw=2.5, label=fr"$z_{{obs}}={_z:.3f}$")
     for _v in ([-_zc, _zc] if _tail == "Dos colas" else [_zc]):
-        _ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
-    _ax.set_title("Distribución bajo $H_0$ (Normal estándar) — Prueba Z para proporción")
-    _ax.set_xlabel("$Z$"); _ax.set_ylabel("densidad"); _ax.legend(loc="upper right", fontsize=8.5)
+        ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
+    ax.set_title("Distribución bajo $H_0$ (Normal estándar) — Prueba Z para proporción")
+    ax.set_xlabel("$Z$"); ax.set_ylabel("densidad"); ax._legend(loc="upper right", fontsize=8.5)
 
     hypo_p_stat = _z; hypo_p_pval = _p; hypo_p_crit = _zc; hypo_p_reject = _rej; hypo_p_se = _se; hypo_p_phat = _phat
     _fig
-    return (
-        hypo_p_crit,
-        hypo_p_phat,
-        hypo_p_pval,
-        hypo_p_reject,
-        hypo_p_se,
-        hypo_p_stat,
-    )
+    return hypo_p_crit, hypo_p_phat, hypo_p_pval, hypo_p_reject, hypo_p_se, hypo_p_stat
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_p_crit,
-    hypo_p_k,
-    hypo_p_n,
-    hypo_p_p0,
-    hypo_p_phat,
-    hypo_p_pval,
-    hypo_p_reject,
-    hypo_p_se,
-    hypo_p_stat,
-    hypo_tail,
-    mo,
-):
+def _(hypo_alpha, hypo_tail, hypo_p_k, hypo_p_n, hypo_p_p0, hypo_p_crit, hypo_p_phat, hypo_p_pval, hypo_p_reject, hypo_p_se, hypo_p_stat, mo, np):
     _p0 = float(hypo_p_p0.value); _n = int(hypo_p_n.value); _k = min(int(hypo_p_k.value), _n)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
 
@@ -1663,6 +1622,7 @@ def _(
     return
 
 
+# —————— 7d: t-test dos muestras (Welch) ——————
 @app.cell
 def _(mo):
     hypo_w_d0 = mo.ui.slider(-5.0, 5.0, value=0.0, step=0.1, label=r"$H_0:\ \Delta_0 = \mu_1-\mu_2$", show_value=True)
@@ -1676,33 +1636,11 @@ def _(mo):
         mo.md("**Parámetros — Prueba t de dos muestras (Welch)**"),
         hypo_w_d0, hypo_w_n1, hypo_w_n2, hypo_w_x1, hypo_w_x2, hypo_w_s1, hypo_w_s2,
     ])
-    return (
-        hypo_w_d0,
-        hypo_w_n1,
-        hypo_w_n2,
-        hypo_w_s1,
-        hypo_w_s2,
-        hypo_w_x1,
-        hypo_w_x2,
-    )
+    return hypo_w_d0, hypo_w_n1, hypo_w_n2, hypo_w_s1, hypo_w_s2, hypo_w_x1, hypo_w_x2
 
 
 @app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_tail,
-    hypo_w_d0,
-    hypo_w_n1,
-    hypo_w_n2,
-    hypo_w_s1,
-    hypo_w_s2,
-    hypo_w_x1,
-    hypo_w_x2,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, hypo_alpha, hypo_tail, hypo_w_d0, hypo_w_n1, hypo_w_n2, hypo_w_s1, hypo_w_s2, hypo_w_x1, hypo_w_x2, new_ax, np, stats):
     _d0 = float(hypo_w_d0.value); _n1 = int(hypo_w_n1.value); _n2 = int(hypo_w_n2.value)
     _x1 = float(hypo_w_x1.value); _x2 = float(hypo_w_x2.value)
     _s1 = float(hypo_w_s1.value); _s2 = float(hypo_w_s2.value)
@@ -1727,54 +1665,30 @@ def _(
         _tc = stats.t.ppf(_alpha, _df)
         _rej = _t <= _tc
 
-    _fig, _ax = new_ax(figsize=(9.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.0))
     _x = np.linspace(-4, 4, 800)
     _y = stats.t.pdf(_x, _df)
-    _ax.plot(_x, _y, color=C["slate"], lw=2, label=fr"$H_0:\ t\sim t_{{{_df}}}$")
+    ax.plot(_x, _y, color=C["slate"], lw=2, label=fr"$H_0:\ t\sim t_{{{_df}}}$")
     if _tail == "Dos colas":
         _rej_mask = (_x <= -_tc) | (_x >= _tc)
     elif _tail == "Cola derecha (>)":
         _rej_mask = _x >= _tc
     else:
         _rej_mask = _x <= _tc
-    _ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
-    _ax.axvline(_t, color=C["primary"], lw=2.5, label=fr"$t_{{obs}}={_t:.3f}$")
+    ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
+    ax.axvline(_t, color=C["primary"], lw=2.5, label=fr"$t_{{obs}}={_t:.3f}$")
     for _v in ([-_tc, _tc] if _tail == "Dos colas" else [_tc]):
-        _ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
-    _ax.set_title(f"Distribución $t$ bajo $H_0$ (g.l.≈{_df}) — Welch dos muestras")
-    _ax.set_xlabel("$t$"); _ax.set_ylabel("densidad"); _ax.legend(loc="upper right", fontsize=8.5)
+        ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
+    ax.set_title(f"Distribución $t$ bajo $H_0$ (g.l.≈{_df}) — Welch dos muestras")
+    ax.set_xlabel("$t$"); ax.set_ylabel("densidad"); ax._legend(loc="upper right", fontsize=8.5)
 
     hypo_w_stat = _t; hypo_w_pval = _p; hypo_w_crit = _tc; hypo_w_reject = _rej; hypo_w_se = _se; hypo_w_df = _df
     _fig
-    return (
-        hypo_w_crit,
-        hypo_w_df,
-        hypo_w_pval,
-        hypo_w_reject,
-        hypo_w_se,
-        hypo_w_stat,
-    )
+    return hypo_w_crit, hypo_w_df, hypo_w_pval, hypo_w_reject, hypo_w_se, hypo_w_stat
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_tail,
-    hypo_w_crit,
-    hypo_w_d0,
-    hypo_w_df,
-    hypo_w_n1,
-    hypo_w_n2,
-    hypo_w_pval,
-    hypo_w_reject,
-    hypo_w_s1,
-    hypo_w_s2,
-    hypo_w_se,
-    hypo_w_stat,
-    hypo_w_x1,
-    hypo_w_x2,
-    mo,
-):
+def _(hypo_alpha, hypo_tail, hypo_w_d0, hypo_w_n1, hypo_w_n2, hypo_w_s1, hypo_w_s2, hypo_w_x1, hypo_w_x2, hypo_w_crit, hypo_w_df, hypo_w_pval, hypo_w_reject, hypo_w_se, hypo_w_stat, mo, np):
     _d0 = float(hypo_w_d0.value); _n1 = int(hypo_w_n1.value); _n2 = int(hypo_w_n2.value)
     _x1 = float(hypo_w_x1.value); _x2 = float(hypo_w_x2.value)
     _s1 = float(hypo_w_s1.value); _s2 = float(hypo_w_s2.value)
@@ -1813,6 +1727,7 @@ def _(
     return
 
 
+# —————— 7e: χ² bondad de ajuste ——————
 @app.cell
 def _(mo):
     hypo_gof_k = mo.ui.slider(2, 12, value=6, step=1, label="$k$ (categorías)", show_value=True)
@@ -1827,17 +1742,7 @@ def _(mo):
 
 
 @app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_gof_N,
-    hypo_gof_bias,
-    hypo_gof_k,
-    hypo_gof_seed,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, hypo_alpha, hypo_gof_N, hypo_gof_bias, hypo_gof_k, hypo_gof_seed, new_ax, np, stats):
     _rng = np.random.default_rng(int(hypo_gof_seed.value))
     _k = int(hypo_gof_k.value); _N = int(hypo_gof_N.value); _bias = float(hypo_gof_bias.value)
     _alpha = float(hypo_alpha.value)
@@ -1852,41 +1757,21 @@ def _(
     _chi2_crit = stats.chi2.ppf(1 - _alpha, _df)
     _rej = _chi2 >= _chi2_crit
 
-    _fig, _ax = new_ax(figsize=(9.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.0))
     _idx = np.arange(1, _k + 1)
-    _ax.bar(_idx - 0.19, _obs, width=0.38, color=C["primary"], alpha=0.85, label="Observado $O_i$")
-    _ax.bar(_idx + 0.19, _exp, width=0.38, color=C["muted"], alpha=0.85, label="Esperado $E_i$")
-    _ax.set_xticks(_idx)
-    _ax.set_title(f"Bondad de ajuste χ² (g.l.={_df}) — Observado vs Esperado")
-    _ax.set_xlabel("categoría"); _ax.set_ylabel("conteo"); _ax.legend()
+    ax.bar(_idx - 0.19, _obs, width=0.38, color=C["primary"], alpha=0.85, label="Observado $O_i$")
+    ax.bar(_idx + 0.19, _exp, width=0.38, color=C["muted"], alpha=0.85, label="Esperado $E_i$")
+    ax.set_xticks(_idx)
+    ax.set_title(f"Bondad de ajuste χ² (g.l.={_df}) — Observado vs Esperado")
+    ax.set_xlabel("categoría"); ax.set_ylabel("conteo"); ax._legend()
 
     hypo_gof_chi2 = _chi2; hypo_gof_pval = _pval; hypo_gof_crit = _chi2_crit; hypo_gof_reject = _rej; hypo_gof_df = _df; hypo_gof_obs = _obs; hypo_gof_exp = _exp
     _fig
-    return (
-        hypo_gof_chi2,
-        hypo_gof_crit,
-        hypo_gof_df,
-        hypo_gof_exp,
-        hypo_gof_obs,
-        hypo_gof_pval,
-        hypo_gof_reject,
-    )
+    return hypo_gof_chi2, hypo_gof_crit, hypo_gof_df, hypo_gof_exp, hypo_gof_obs, hypo_gof_pval, hypo_gof_reject
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_gof_N,
-    hypo_gof_chi2,
-    hypo_gof_crit,
-    hypo_gof_df,
-    hypo_gof_exp,
-    hypo_gof_k,
-    hypo_gof_obs,
-    hypo_gof_pval,
-    hypo_gof_reject,
-    mo,
-):
+def _(hypo_alpha, hypo_gof_N, hypo_gof_bias, hypo_gof_k, hypo_gof_chi2, hypo_gof_crit, hypo_gof_df, hypo_gof_exp, hypo_gof_obs, hypo_gof_pval, hypo_gof_reject, mo, np):
     _k = int(hypo_gof_k.value); _N = int(hypo_gof_N.value)
     _alpha = float(hypo_alpha.value)
 
@@ -1899,15 +1784,15 @@ def _(
     _formula = rf"""
     **Fórmula con tus valores (estilo Excel — χ² bondad de ajuste):**
 
-    $$\chi^2 = \sum_{{i=1}}^{{k}} \frac{{(O_i - E_i)^2}}{{E_i}}
+    $$\\chi^2 = \\sum_{{i=1}}^{{k}} \\frac{{(O_i - E_i)^2}}{{E_i}}
        = {_terms_str}
        = {hypo_gof_chi2:.4f}$$
 
-    **Grados de libertad:** $\;df = k-1 = {hypo_gof_df}$
+    **Grados de libertad:** $\\;df = k-1 = {hypo_gof_df}$
 
-    **Valor crítico ($\alpha={_alpha:.3f}$, cola derecha):** $\chi^2_{{crit}} = {hypo_gof_crit:.3f}$
+    **Valor crítico ($\\alpha={_alpha:.3f}$, cola derecha):** $\\chi^2_{{crit}} = {hypo_gof_crit:.3f}$
 
-    **Valor $p$ (cola derecha):** ${hypo_gof_pval:.6f}$ &nbsp;|&nbsp; **$\alpha$:** ${_alpha:.3f}$
+    **Valor $p$ (cola derecha):** ${hypo_gof_pval:.6f}$ &nbsp;|&nbsp; **$\\alpha$:** ${_alpha:.3f}$
 
     **Decisión:** {_decision}
     """
@@ -1915,6 +1800,7 @@ def _(
     return
 
 
+# —————— 7f: χ² independencia (2×2) ——————
 @app.cell
 def _(mo):
     hypo_chi2_a = mo.ui.slider(0, 200, value=50, step=1, label="$a$ (fila 1, col 1)", show_value=True)
@@ -1923,41 +1809,19 @@ def _(mo):
     hypo_chi2_d = mo.ui.slider(0, 200, value=40, step=1, label="$d$ (fila 2, col 2)", show_value=True)
     mo.vstack([
         mo.md("**Parámetros — Independencia χ² (tabla 2×2)**"),
+        mo.md("Tabla observada:"),
+        mo.md("| | Col 1 | Col 2 | Total |"),
+        mo.md("|---|---|---|---|"),
+        mo.md(f"| Fila 1 | {hypo_chi2_a.value} | {hypo_chi2_b.value} | {hypo_chi2_a.value + hypo_chi2_b.value} |"),
+        mo.md(f"| Fila 2 | {hypo_chi2_c.value} | {hypo_chi2_d.value} | {hypo_chi2_c.value + hypo_chi2_d.value} |"),
+        mo.md(f"| Total | {hypo_chi2_a.value + hypo_chi2_c.value} | {hypo_chi2_b.value + hypo_chi2_d.value} | {hypo_chi2_a.value + hypo_chi2_b.value + hypo_chi2_c.value + hypo_chi2_d.value} |"),
         hypo_chi2_a, hypo_chi2_b, hypo_chi2_c, hypo_chi2_d,
     ])
     return hypo_chi2_a, hypo_chi2_b, hypo_chi2_c, hypo_chi2_d
 
 
 @app.cell
-def _(hypo_chi2_a, hypo_chi2_b, hypo_chi2_c, hypo_chi2_d, mo):
-    _a = int(hypo_chi2_a.value); _b = int(hypo_chi2_b.value)
-    _c = int(hypo_chi2_c.value); _d = int(hypo_chi2_d.value)
-    mo.md(
-        f"""
-        Tabla observada:
-
-        | | Col 1 | Col 2 | Total |
-        |---|---|---|---|
-        | Fila 1 | {_a} | {_b} | {_a + _b} |
-        | Fila 2 | {_c} | {_d} | {_c + _d} |
-        | Total | {_a + _c} | {_b + _d} | {_a + _b + _c + _d} |
-        """
-    )
-    return
-
-
-@app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_chi2_a,
-    hypo_chi2_b,
-    hypo_chi2_c,
-    hypo_chi2_d,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, hypo_alpha, hypo_chi2_a, hypo_chi2_b, hypo_chi2_c, hypo_chi2_d, new_ax, np, stats):
     _a = int(hypo_chi2_a.value); _b = int(hypo_chi2_b.value)
     _c = int(hypo_chi2_c.value); _d = int(hypo_chi2_d.value)
     _alpha = float(hypo_alpha.value)
@@ -1967,46 +1831,24 @@ def _(
     _chi2_crit = stats.chi2.ppf(1 - _alpha, _df)
     _rej = _chi2 >= _chi2_crit
 
-    _fig, _ax = new_ax(figsize=(7.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(7.0, 4.0))
     _labels = ["Col 1", "Col 2"]
     _x = np.arange(2); _w = 0.35
-    _ax.bar(_x - _w/2, _obs[0], _w, color=C["primary"], alpha=0.85, label="Fila 1 (obs)")
-    _ax.bar(_x + _w/2, _obs[1], _w, color=C["accent"], alpha=0.85, label="Fila 2 (obs)")
-    _ax.bar(_x - _w/2, _exp[0], _w, color=C["primary"], alpha=0.25, hatch="//", edgecolor=C["primary"], label="Esperado")
-    _ax.bar(_x + _w/2, _exp[1], _w, color=C["accent"], alpha=0.25, hatch="//", edgecolor=C["accent"])
-    _ax.set_xticks(_x); _ax.set_xticklabels(_labels)
-    _ax.set_title("Tabla 2×2: Observado vs Esperado (independencia)")
-    _ax.set_ylabel("conteo"); _ax.legend(fontsize=8)
+    ax.bar(_x - _w/2, _obs[0], _w, color=C["primary"], alpha=0.85, label="Fila 1 (obs)")
+    ax.bar(_x + _w/2, _obs[1], _w, color=C["accent"], alpha=0.85, label="Fila 2 (obs)")
+    ax.bar(_x - _w/2, _exp[0], _w, color=C["primary"], alpha=0.25, hatch="//", edgecolor=C["primary"], label="Esperado")
+    ax.bar(_x + _w/2, _exp[1], _w, color=C["accent"], alpha=0.25, hatch="//", edgecolor=C["accent"])
+    ax.set_xticks(_x); ax.set_xticklabels(_labels)
+    ax.set_title("Tabla 2×2: Observado vs Esperado (independencia)")
+    ax.set_ylabel("conteo"); ax._legend(fontsize=8)
 
     hypo_chi2_stat = _chi2; hypo_chi2_pval = _pval; hypo_chi2_crit = _chi2_crit; hypo_chi2_reject = _rej; hypo_chi2_df = _df; hypo_chi2_exp = _exp; hypo_chi2_obs = _obs
     _fig
-    return (
-        hypo_chi2_crit,
-        hypo_chi2_df,
-        hypo_chi2_exp,
-        hypo_chi2_obs,
-        hypo_chi2_pval,
-        hypo_chi2_reject,
-        hypo_chi2_stat,
-    )
+    return hypo_chi2_crit, hypo_chi2_df, hypo_chi2_exp, hypo_chi2_obs, hypo_chi2_pval, hypo_chi2_reject, hypo_chi2_stat
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_chi2_a,
-    hypo_chi2_b,
-    hypo_chi2_c,
-    hypo_chi2_crit,
-    hypo_chi2_d,
-    hypo_chi2_df,
-    hypo_chi2_exp,
-    hypo_chi2_obs,
-    hypo_chi2_pval,
-    hypo_chi2_reject,
-    hypo_chi2_stat,
-    mo,
-):
+def _(hypo_alpha, hypo_chi2_a, hypo_chi2_b, hypo_chi2_c, hypo_chi2_d, hypo_chi2_crit, hypo_chi2_df, hypo_chi2_exp, hypo_chi2_obs, hypo_chi2_pval, hypo_chi2_reject, hypo_chi2_stat, mo, np):
     _a = int(hypo_chi2_a.value); _b = int(hypo_chi2_b.value)
     _c = int(hypo_chi2_c.value); _d = int(hypo_chi2_d.value)
     _alpha = float(hypo_alpha.value)
@@ -2053,6 +1895,7 @@ def _(
     return
 
 
+# —————— 7g: Prueba F varianzas ——————
 @app.cell
 def _(mo):
     hypo_f_n1 = mo.ui.slider(2, 200, value=25, step=1, label="$n_1$", show_value=True)
@@ -2067,18 +1910,7 @@ def _(mo):
 
 
 @app.cell
-def _(
-    C,
-    hypo_alpha,
-    hypo_f_n1,
-    hypo_f_n2,
-    hypo_f_v1,
-    hypo_f_v2,
-    hypo_tail,
-    new_ax,
-    np,
-    stats,
-):
+def _(C, hypo_alpha, hypo_tail, hypo_f_n1, hypo_f_n2, hypo_f_v1, hypo_f_v2, new_ax, np, stats):
     _n1 = int(hypo_f_n1.value); _n2 = int(hypo_f_n2.value)
     _v1 = float(hypo_f_v1.value); _v2 = float(hypo_f_v2.value)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
@@ -2106,52 +1938,31 @@ def _(
         _Fc = stats.f.ppf(_alpha, _df_num, _df_den)
         _rej = _F <= _Fc
 
-    _fig, _ax = new_ax(figsize=(9.0, 4.0))
+    _fig, _ax = new_ax(_figsize=(9.0, 4.0))
     _x = np.linspace(0, max(5, _F * 1.5), 800)
     _y = stats.f.pdf(_x, _df_num, _df_den)
-    _ax.plot(_x, _y, color=C["slate"], lw=2, label=fr"$H_0:\ F\sim F_{{{_df_num},{_df_den}}}$")
+    ax.plot(_x, _y, color=C["slate"], lw=2, label=fr"$H_0:\ F\sim F_{{{_df_num},{_df_den}}}$")
     if _tail == "Dos colas":
         _rej_mask = (_x <= _Fc_low) | (_x >= _Fc_high)
     elif _tail == "Cola derecha (>)":
         _rej_mask = _x >= _Fc
     else:
         _rej_mask = _x <= _Fc
-    _ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
-    _ax.axvline(_F, color=C["primary"], lw=2.5, label=fr"$F_{{obs}}={_F:.3f}$")
+    ax.fill_between(_x, _y, where=_rej_mask, color=C["danger"], alpha=0.35, label=fr"Región de rechazo ($\alpha={_alpha:.3f}$)")
+    ax.axvline(_F, color=C["primary"], lw=2.5, label=fr"$F_{{obs}}={_F:.3f}$")
     for _v in ([_Fc_low, _Fc_high] if _tail == "Dos colas" else [_Fc]):
-        _ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
-    _ax.set_title(f"Distribución $F$ bajo $H_0$ (g.l.={_df_num},{_df_den}) — Prueba de varianzas")
-    _ax.set_xlabel("$F$"); _ax.set_ylabel("densidad"); _ax.legend(loc="upper right", fontsize=8.5)
+        ax.axvline(_v, color=C["danger"], ls="--", lw=1.5)
+    ax.set_title(f"Distribución $F$ bajo $H_0$ (g.l.={_df_num},{_df_den}) — Prueba de varianzas")
+    ax.set_xlabel("$F$"); ax.set_ylabel("densidad"); ax._legend(loc="upper right", fontsize=8.5)
 
     hypo_f_stat = _F; hypo_f_pval = _p; hypo_f_crit = (_Fc_low, _Fc_high) if _tail=="Dos colas" else _Fc
     hypo_f_reject = _rej; hypo_f_df1 = _df_num; hypo_f_df2 = _df_den
     _fig
-    return (
-        hypo_f_crit,
-        hypo_f_df1,
-        hypo_f_df2,
-        hypo_f_pval,
-        hypo_f_reject,
-        hypo_f_stat,
-    )
+    return hypo_f_crit, hypo_f_df1, hypo_f_df2, hypo_f_pval, hypo_f_reject, hypo_f_stat
 
 
 @app.cell
-def _(
-    hypo_alpha,
-    hypo_f_crit,
-    hypo_f_df1,
-    hypo_f_df2,
-    hypo_f_n1,
-    hypo_f_n2,
-    hypo_f_pval,
-    hypo_f_reject,
-    hypo_f_stat,
-    hypo_f_v1,
-    hypo_f_v2,
-    hypo_tail,
-    mo,
-):
+def _(hypo_alpha, hypo_tail, hypo_f_n1, hypo_f_n2, hypo_f_v1, hypo_f_v2, hypo_f_crit, hypo_f_df1, hypo_f_df2, hypo_f_pval, hypo_f_reject, hypo_f_stat, mo):
     _n1 = int(hypo_f_n1.value); _n2 = int(hypo_f_n2.value)
     _v1 = float(hypo_f_v1.value); _v2 = float(hypo_f_v2.value)
     _alpha = float(hypo_alpha.value); _tail = hypo_tail.value
@@ -2183,6 +1994,9 @@ def _(
     return
 
 
+# ============================================================================
+# MOSTRAR SOLO LA PRUEBA SELECCIONADA (renderizado condicional via markdown)
+# ============================================================================
 @app.cell
 def _(hypo_test_type, mo):
     _sel = hypo_test_type.value
@@ -2201,12 +2015,13 @@ def _(hypo_test_type, mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"""
-    ---
-    """)
+    mo.md(r"""---""")
     return
 
 
+# ============================================================================
+# CIERRE: GLOSARIO Y REFERENCIAS
+# ============================================================================
 @app.cell
 def _(mo):
     mo.accordion({
